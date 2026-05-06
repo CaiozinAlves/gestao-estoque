@@ -76,4 +76,20 @@ class ProdutoServiceTest {
         // Garante que o método save nunca foi chamado
         verify(repository, never()).save(any());
     }
+    @Test
+    @DisplayName("Deve rejeitar produto com preço zero")
+    void deveRejeitarProdutoComPrecoZero() {
+        Produto produto = new Produto(null, "Produto Zero", 0.0, "Cat", 1, "SKU00005");
+
+        assertThrows(IllegalArgumentException.class, () -> service.cadastrar(produto));
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar produto com nome em branco")
+    void deveRejeitarProdutoComNomeEmBranco() {
+        Produto produto = new Produto(null, "   ", 50.0, "Cat", 1, "SKU00006");
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.cadastrar(produto));
+        assertEquals("O nome do produto é obrigatório.", ex.getMessage());
+    }
 }

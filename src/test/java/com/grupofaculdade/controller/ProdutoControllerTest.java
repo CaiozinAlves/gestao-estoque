@@ -73,4 +73,29 @@ class ProdutoControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.erro").value("Já existe um produto cadastrado com este SKU."));
     }
+    @Test
+    @DisplayName("GET /produtos deve retornar lista de produtos com status 200")
+    void deveListarProdutosERetornar200() throws Exception {
+        List<Produto> lista = List.of(
+            new Produto(1L, "Camiseta", 49.90, "Vestuário", 10, "SKU12345"),
+            new Produto(2L, "Calça",    129.90, "Vestuário", 5, "SKU54321")
+        );
+        when(service.listarTodos()).thenReturn(lista);
+
+        mockMvc.perform(get("/produtos"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].nome").value("Camiseta"));
+    }
+
+    @Test
+    @DisplayName("POST /produtos com nome vazio deve retornar 400 Bad Request")
+    void deveRetornar400QuandoNomeVazio() throws Exception {
+        Produto invalido = new Produto(null, "", 50.0, "Vestuário", 10, "SKU12345");
+
+        mockMvc.perform(post("/produtos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalido)))
+            .andExpect(status().isBadRequest());
+    }
 }

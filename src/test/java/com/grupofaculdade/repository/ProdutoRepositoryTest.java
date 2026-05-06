@@ -52,4 +52,26 @@ class ProdutoRepositoryTest {
         assertTrue(encontrado.isPresent());
         assertEquals("Mouse", encontrado.get().getNome());
     }
+    @Test
+    @DisplayName("REGRESSÃO: findAll deve retornar todos os produtos salvos")
+    void deveListarTodosProdutosSalvos() {
+        repository.save(Produto.builder().nome("Produto A").preco(10.0).categoria("Cat").quantidade(1).sku("SKU00001").build());
+        repository.save(Produto.builder().nome("Produto B").preco(20.0).categoria("Cat").quantidade(1).sku("SKU00002").build());
+        repository.save(Produto.builder().nome("Produto C").preco(30.0).categoria("Cat").quantidade(1).sku("SKU00003").build());
+
+        List<Produto> produtos = repository.findAll();
+
+        assertEquals(3, produtos.size());
+    }
+
+    @Test
+    @DisplayName("REGRESSÃO: Deve deletar produto e confirmar remoção")
+    void deveDeletarProduto() {
+        Produto produto = repository.save(Produto.builder().nome("Tênis").preco(199.90).categoria("Cat").quantidade(1).sku("SKU00004").build());
+        Long id = produto.getId();
+
+        repository.deleteById(id);
+
+        assertFalse(repository.findById(id).isPresent());
+    }
 }
