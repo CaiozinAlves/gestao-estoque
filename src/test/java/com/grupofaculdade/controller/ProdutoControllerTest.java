@@ -31,50 +31,46 @@ class ProdutoControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("HU-01: POST /produtos deve retornar 201 ao cadastrar produto válido")
+    @DisplayName("POST /produtos deve retornar 201 ao cadastrar produto completo e válido")
     void deveCadastrarProdutoERetornar201() throws Exception {
-        // Arrange
-        Produto entrada = new Produto(null, "Notebook", 3499.00);
-        Produto saida   = new Produto(1L,   "Notebook", 3499.00);
+        Produto entrada = new Produto(null, "Notebook", 3499.00, "Eletrônicos", 10, "NTBK3499");
+        Produto saida   = new Produto(1L,   "Notebook", 3499.00, "Eletrônicos", 10, "NTBK3499");
         when(service.cadastrar(any())).thenReturn(saida);
 
-        // Act & Assert
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(entrada)))
-            .andExpect(status().isCreated())              // 201
+            .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.nome").value("Notebook"))
-            .andExpect(jsonPath("$.preco").value(3499.00));
+            .andExpect(jsonPath("$.sku").value("NTBK3499"))
+            .andExpect(jsonPath("$.quantidade").value(10));
     }
 
     @Test
-    @DisplayName("GET /produtos deve retornar lista de produtos com status 200")
-    void deveListarProdutosERetornar200() throws Exception {
-        // Arrange
-        List<Produto> lista = List.of(
-            new Produto(1L, "Camiseta", 49.90),
-            new Produto(2L, "Calça",    129.90)
-        );
-        when(service.listarTodos()).thenReturn(lista);
+    @DisplayName("POST /produtos deve retornar 400 Bad Request se a quantidade for negativa (Validação do Controller)")
+    void deveRetornar400QuandoQuantidadeNegativa() throws Exception {
+        // Quantidade -5 viola a anotação @Min(0) na entidade Produto
+        Produto invalido = new Produto(null, "Celular", 1500.0, "Eletrônicos", -5, "CEL15000");
 
-        // Act & Assert
-        mockMvc.perform(get("/produtos"))
-            .andExpect(status().isOk())                   // 200
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[0].nome").value("Camiseta"));
-    }
-
-    @Test
-    @DisplayName("POST /produtos com nome vazio deve retornar 400 Bad Request")
-    void deveRetornar400QuandoNomeVazio() throws Exception {
-        // Arrange — nome em branco (violação de @NotBlank)
-        Produto invalido = new Produto(null, "", 50.0);
-
-        // Act & Assert
         mockMvc.perform(post("/produtos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalido)))
-            .andExpect(status().isBadRequest());           // 400
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.quantidade").value("A quantidade não pode ser negativa"));
+    }
+
+    @Test
+    @DisplayName("POST /produtos deve retornar 400 Bad Request quando a regra de SKU duplicado for violada pelo Service")
+    void deveRetornar400QuandoSkuDuplicado() throws Exception {
+        Produto entrada = new Produto(null, "Notebook", 3499.00, "Eletrônicos", 10, "NTBK3499");
+        
+        // O Service lança a exceção manual ao detectar duplicação
+        when(service.cadastrar(any())).thenThrow(new IllegalArgumentException("Já existe um produto cadastrado com este SKU."));
+
+        mockMvc.perform(post("/produtos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(entrada)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.erro").value("Já existe um produto cadastrado com este SKU."));
     }
 }

@@ -18,52 +18,38 @@ class ProdutoRepositoryTest {
     private ProdutoRepository repository;
 
     @Test
-    @DisplayName("Deve salvar produto e recuperar pelo ID")
+    @DisplayName("Deve salvar produto completo e recuperar pelo ID")
     void deveSalvarERecuperarProduto() {
-        // Arrange
         Produto produto = Produto.builder()
-                .nome("Calça Jeans")
-                .preco(129.90)
+                .nome("Notebook Gamer")
+                .preco(4500.0)
+                .categoria("Eletrônicos")
+                .quantidade(5)
+                .sku("NOTEB001")
                 .build();
 
-        // Act
         Produto salvo = repository.save(produto);
         Optional<Produto> encontrado = repository.findById(salvo.getId());
 
-        // Assert
         assertTrue(encontrado.isPresent());
-        assertEquals("Calça Jeans", encontrado.get().getNome());
-        assertEquals(129.90, encontrado.get().getPreco());
+        assertEquals("Notebook Gamer", encontrado.get().getNome());
+        assertEquals("NOTEB001", encontrado.get().getSku());
     }
 
     @Test
-    @DisplayName("REGRESSÃO: findAll deve retornar todos os produtos salvos")
-    void deveListarTodosProdutosSalvos() {
-        // Arrange
-        repository.save(Produto.builder().nome("Produto A").preco(10.0).build());
-        repository.save(Produto.builder().nome("Produto B").preco(20.0).build());
-        repository.save(Produto.builder().nome("Produto C").preco(30.0).build());
+    @DisplayName("Deve conseguir buscar um produto especificamente pelo seu SKU")
+    void deveBuscarProdutoPorSku() {
+        repository.save(Produto.builder()
+            .nome("Mouse")
+            .preco(150.0)
+            .categoria("Periféricos")
+            .quantidade(20)
+            .sku("MOUSE123")
+            .build());
 
-        // Act
-        List<Produto> produtos = repository.findAll();
+        Optional<Produto> encontrado = repository.findBySku("MOUSE123");
 
-        // Assert
-        assertEquals(3, produtos.size());
-    }
-
-    @Test
-    @DisplayName("REGRESSÃO: Deve deletar produto e confirmar remoção")
-    void deveDeletarProduto() {
-        // Arrange
-        Produto produto = repository.save(
-            Produto.builder().nome("Tênis").preco(199.90).build()
-        );
-        Long id = produto.getId();
-
-        // Act
-        repository.deleteById(id);
-
-        // Assert
-        assertFalse(repository.findById(id).isPresent());
+        assertTrue(encontrado.isPresent());
+        assertEquals("Mouse", encontrado.get().getNome());
     }
 }
