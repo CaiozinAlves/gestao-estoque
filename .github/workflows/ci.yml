@@ -1,0 +1,31 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main", "Feature/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+
+    - name: Configurar o Java 17 (JDK)
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Dar permissão de execução para o Maven Wrapper
+      run: chmod +x mvnw
+
+    - name: Rodar todos os Testes (Unitários, Integração e Sistema)
+      run: ./mvnw test
+
+    - name: Garantir que o projeto compila
+      run: ./mvnw clean compile
