@@ -1,13 +1,12 @@
-package com.exemplo.service;
+package com.grupofaculdade.service;
 
-import com.exemplo.model.Produto;
-import com.exemplo.repository.ProdutoRepository;
+import com.grupofaculdade.model.Produto;
+import com.grupofaculdade.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-// Integrante A — Teste de Unidade
 @Service
 public class ProdutoService {
 
@@ -21,6 +20,18 @@ public class ProdutoService {
         if (produto.getNome() == null || produto.getNome().isBlank()) {
             throw new IllegalArgumentException("O nome do produto é obrigatório.");
         }
+        if (produto.getQuantidade() == null || produto.getQuantidade() < 0) {
+            throw new IllegalArgumentException("A quantidade não pode ser negativa.");
+        }
+        if (produto.getSku() == null || produto.getSku().isBlank()) {
+            throw new IllegalArgumentException("O SKU do produto é obrigatório.");
+        }
+        
+        // Regra de negócio forte: O SKU deve ser único no banco de dados
+        if (repository.findBySku(produto.getSku()).isPresent()) {
+            throw new IllegalArgumentException("Já existe um produto cadastrado com este SKU.");
+        }
+
         return repository.save(produto);
     }
 

@@ -47,9 +47,15 @@ git clone <url-do-repositorio>
 cd gestao-estoque
 
 # Rodar os testes
+# No Linux/Mac:
 ./mvnw test
+# No Windows (PowerShell/CMD):
+.\mvnw.cmd test
 
 # Subir a aplicação
+# No Linux/Mac:
 ./mvnw spring-boot:run
+# No Windows:
+.\mvnw.cmd spring-boot:run
 # API disponível em: http://localhost:8080/produtos
 ```

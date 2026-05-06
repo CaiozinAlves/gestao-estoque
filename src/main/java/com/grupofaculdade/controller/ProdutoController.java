@@ -1,7 +1,7 @@
-package com.exemplo.controller;
+package com.grupofaculdade.controller;
 
-import com.exemplo.model.Produto;
-import com.exemplo.service.ProdutoService;
+import com.grupofaculdade.model.Produto;
+import com.grupofaculdade.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Integrante C — Teste de Sistema (End-to-End)
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
