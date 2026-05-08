@@ -1,0 +1,4 @@
+com\grupofaculdade\model\Produto.class
+com\grupofaculdade\controller\ProdutoController.class
+com\grupofaculdade\EstoqueApplication.class
+com\grupofaculdade\exception\GlobalExceptionHandler.class
