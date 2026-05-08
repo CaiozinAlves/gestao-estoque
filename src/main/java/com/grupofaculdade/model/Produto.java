@@ -20,11 +20,6 @@ public class Produto {
     @Positive(message = "O preço deve ser positivo")
     @Column(nullable = false)
     private Double preco;
-<<<<<<< HEAD:src/main/java/com/exemplo/model/Produto.java
-<<<<<<< Updated upstream:src/main/java/com/exemplo/model/Produto.java
-=======
-=======
->>>>>>> 295fc080dcaa2765d1d194331a94bb820622bf92:src/main/java/com/grupofaculdade/model/Produto.java
 
     @NotBlank(message = "A categoria é obrigatória")
     @Column(nullable = false)
@@ -39,7 +34,6 @@ public class Produto {
     @Size(min = 8, max = 8, message = "O SKU deve ter exatamente 8 caracteres")
     @Column(nullable = false, unique = true)
     private String sku;
-<<<<<<< HEAD:src/main/java/com/exemplo/model/Produto.java
 
     public Produto() {
     }
@@ -147,7 +141,4 @@ public class Produto {
             return new Produto(id, nome, preco, categoria, quantidade, sku);
         }
     }
->>>>>>> Stashed changes:src/main/java/com/grupofaculdade/model/Produto.java
-=======
->>>>>>> 295fc080dcaa2765d1d194331a94bb820622bf92:src/main/java/com/grupofaculdade/model/Produto.java
 }
